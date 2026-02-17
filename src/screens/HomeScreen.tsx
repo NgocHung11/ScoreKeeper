@@ -60,10 +60,19 @@ const HomeScreen = () => {
 
     // Logic Chốt Sổ (Submit)
     const handleSubmitRound = () => {
-        // Kiểm tra xem có dữ liệu nhập vào chưa (Optional)
-        const hasData = Object.values(currentRoundScores).some(score => score !== 0);
-        if (!hasData) {
-            Alert.alert("Chưa nhập điểm", "Vui lòng nhập thắng thua trước khi chốt!");
+        // Kiểm tra xem tất cả người chơi (trừ cái) đã có điểm chưa (Khác 0)
+        const nonDealerPlayers = players.filter(p => p.id !== dealerId);
+        const missingPlayers = nonDealerPlayers.filter(p => {
+            const score = currentRoundScores[p.id];
+            return score === 0 || score === undefined;
+        });
+
+        if (missingPlayers.length > 0) {
+            const missingNames = missingPlayers.map(p => p.name).join(', ');
+            Alert.alert(
+                "Chưa nhập đủ!",
+                `Vui lòng nhập thắng/thua cho: ${missingNames}`
+            );
             return;
         }
 
